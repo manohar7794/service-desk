@@ -71,9 +71,14 @@ kbd { color: #999f99; font-size: 10px; padding: 4px 6px; border: 1px solid #e7ea
 .count-badge { display: inline-grid; place-items: center; min-width: 24px; height: 23px; padding: 0 6px; border-radius: 7px; color: #657369; background: #e9ede8; font: 700 11px "DM Sans", sans-serif; letter-spacing: 0; }
 .open-count { display: flex; align-items: center; gap: 7px; color: #778177; font-size: 12px; }
 .open-count > span { width: 7px; height: 7px; border-radius: 50%; background: #76a783; }
-.filter-row { display: flex; align-items: center; gap: 7px; overflow: auto; padding: 18px 0; }
-.filter-chip { flex: 0 0 auto; border: 1px solid transparent; border-radius: 8px; padding: 8px 11px; background: transparent; color: #7e877f; font-size: 11px; font-weight: 600; }
-.filter-chip.selected { color: var(--green); border-color: #dbe8dd; background: #eaf1eb; }
+.filter-row { display: flex; align-items: center; gap: 8px; overflow-x: auto; overscroll-behavior-x: contain; padding: 18px 0; scrollbar-width: none; }
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-chip { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 7px; min-height: 37px; border: 1px solid #e1e6e0; border-radius: 999px; padding: 0 13px; background: #fff; color: #737d74; font-size: 11px; font-weight: 600; white-space: nowrap; transition: background .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease; }
+.filter-chip:hover { border-color: #b9c9bc; color: var(--green); }
+.filter-chip:focus-visible { outline: 3px solid #245c4326; outline-offset: 2px; }
+.filter-chip.selected { color: white; border-color: var(--green); background: var(--green); box-shadow: 0 2px 6px #245c4326; }
+.filter-count { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px; color: #717b72; background: #eef1ed; font-size: 10px; font-weight: 700; }
+.filter-chip.selected .filter-count { color: var(--green); background: #fff; }
 .job-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
 .job-card { padding: 17px 18px 15px; background: #fff; border: 1px solid var(--line); border-radius: 14px; cursor: pointer; transition: box-shadow .17s ease, border-color .17s ease, transform .17s ease; }
 .job-card:hover { border-color: #cbd9ce; box-shadow: 0 7px 22px #26402f0a; transform: translateY(-2px); }

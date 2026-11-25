@@ -62,12 +62,20 @@ function messageOf(error: unknown): string {
 }
 
 function formatDate(value: string): string {
-  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Date unavailable";
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(date);
 }
 
 function formatPickup(value: string | null): string {
   if (!value) return "Not set";
-  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
+  return formatDate(value);
+}
+
+function getHandover(job: ServiceJob | null | undefined): ServiceHandover | null {
+  const handovers = job?.service_handovers;
+  if (Array.isArray(handovers)) return handovers[0] ?? null;
+  return handovers ?? null;
 }
 
 function makeJobRef(): string {
@@ -98,7 +106,7 @@ export default function App() {
   const [searchText, setSearchText] = useState("");
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [searching, setSearching] = useState(false);
-  const [filter, setFilter] = useState<JobStatus | "all">("all");
+  const [filter, setFilter] = useState<JobStatus | "all">("checked_in");
   const [draft, setDraft] = useState<JobDraft>(EMPTY_DRAFT);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [jobFormOpen, setJobFormOpen] = useState(false);
@@ -283,7 +291,7 @@ export default function App() {
     [filter, jobs],
   );
   const openCount = jobs.filter((job) => OPEN_STATUSES.includes(job.status)).length;
-  const activeHandover = activeJob?.service_handovers ?? null;
+  const activeHandover = getHandover(activeJob);
 
   async function submitAuth(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -607,9 +615,12 @@ export default function App() {
 
         <section className="jobs-section">
           <div className="section-header"><div><span className="section-kicker">THE WORKSHOP</span><h2>Service jobs <span className="count-badge">{jobs.length}</span></h2></div><span className="open-count"><span />{openCount} active</span></div>
-          <div className="filter-row">
-            <button className={`filter-chip ${filter === "all" ? "selected" : ""}`} onClick={() => setFilter("all")}>All jobs</button>
-            {STATUS_ORDER.map((status) => <button key={status} className={`filter-chip ${filter === status ? "selected" : ""}`} onClick={() => setFilter(status)}>{STATUS_LABELS[status]}</button>)}
+          <div className="filter-row" role="group" aria-label="Filter jobs by status">
+            <button type="button" aria-pressed={filter === "all"} className={`filter-chip ${filter === "all" ? "selected" : ""}`} onClick={() => setFilter("all")}>All jobs<span className="filter-count">{jobs.length}</span></button>
+            {STATUS_ORDER.map((status) => {
+              const count = jobs.filter((job) => job.status === status).length;
+              return <button type="button" key={status} aria-pressed={filter === status} className={`filter-chip ${filter === status ? "selected" : ""}`} onClick={() => setFilter(status)}>{STATUS_LABELS[status]}<span className="filter-count">{count}</span></button>;
+            })}
           </div>
           {pageError && <div className="error-banner" role="alert">{pageError}<button onClick={() => setPageError("")} aria-label="Dismiss error"><X size={15} /></button></div>}
           {loadingJobs ? <div className="empty-state"><div className="spinner" /><p>Loading your jobs…</p></div> : visibleJobs.length ? (

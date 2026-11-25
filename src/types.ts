@@ -43,5 +43,5 @@ export interface ServiceJob {
   created_at: string;
   vehicles: Pick<Vehicle, "registration" | "make" | "model">;
   status_history: StatusHistory[];
-  service_handovers?: ServiceHandover | null;
+  service_handovers?: ServiceHandover | ServiceHandover[] | null;
 }
